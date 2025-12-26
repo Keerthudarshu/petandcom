@@ -3,42 +3,28 @@ import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 import tagger from "@dhiwise/component-tagger";
 import path from "path";
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // https://vitejs.dev/config/
 export default defineConfig({
   // Base path for assets - use '/' for root deployment
   base: '/',
-  
+
   // This changes the out put dir from dist to build
   // comment this out if that isn't relevant for your project
   build: {
     outDir: "dist",
     chunkSizeWarningLimit: 2000,
     sourcemap: false, // Disable sourcemaps in production for smaller bundles
-    rollupOptions: {
-      output: {
-        // Create a small, conservative manualChunks split to keep the main
-        // bundle smaller. This splits common React-related libs into
-        // a separate chunk and groups the rest of node_modules into `vendor`.
-        manualChunks(id) {
-          if (!id) return null;
-          if (id.includes('node_modules')) {
-            // react-related libs
-            if (id.match(/node_modules\/(react|react-dom|@reduxjs|redux|@reduxjs\/toolkit|recharts|framer-motion|d3|lucide-react)\//)) {
-              return 'vendor_react';
-            }
-            return 'vendor';
-          }
-        }
-      }
-    }
   },
   plugins: [tsconfigPaths(), react(), tagger()],
   resolve: {
     dedupe: ['react', 'react-dom'],
     alias: {
-      react: path.resolve('./node_modules/react'),
-      'react-dom': path.resolve('./node_modules/react-dom')
+      react: path.resolve(__dirname, 'node_modules/react'),
+      'react-dom': path.resolve(__dirname, 'node_modules/react-dom')
     }
   },
   server: {
